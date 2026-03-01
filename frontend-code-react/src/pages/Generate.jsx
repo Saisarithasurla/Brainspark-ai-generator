@@ -1,3 +1,4 @@
+// Generate.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -5,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 
 function Generate() {
   const location = useLocation();
-  const prompt = location.state?.prompt;
+  const prompt = location.state?.prompt; // Prompt passed from previous page
 
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,20 +14,15 @@ function Generate() {
   useEffect(() => {
     if (!prompt) return;
 
-    console.log("Prompt being sent:", prompt);
-    console.log("API URL:", import.meta.env.VITE_API_URL);
-
     const fetchData = async () => {
       setLoading(true);
       try {
-        // ✅ Include API Key in Authorization header
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/generate/`,
-          { prompt: prompt },
+          `${import.meta.env.VITE_API_URL}/api/generate/`, // backend URL
+          { prompt },
           {
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
             },
           }
         );
@@ -34,8 +30,8 @@ function Generate() {
         console.log("Backend response:", response.data);
         setResult(response.data.result || "No result returned");
       } catch (error) {
-        console.error("Axios error:", error);
-        setResult("Something went wrong ❌");
+        console.error("Axios error:", error.response?.data || error.message);
+        setResult(error.response?.data?.error || "Something went wrong ❌");
       } finally {
         setLoading(false);
       }
@@ -45,7 +41,11 @@ function Generate() {
   }, [prompt]);
 
   if (!prompt)
-    return <p className="text-red-500 text-lg">No prompt provided ❗</p>;
+    return (
+      <p className="text-red-500 text-lg">
+        No prompt provided ❗
+      </p>
+    );
 
   return (
     <div className="min-h-screen flex w-full flex-col items-center justify-center p-10 bg-gray-100">
