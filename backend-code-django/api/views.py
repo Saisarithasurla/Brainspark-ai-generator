@@ -22,7 +22,7 @@ def generate(request):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "mistralai/mistral-7b-instruct",
+                "model": "meta-llama/llama-3-8b-instruct",
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.7 
             },
