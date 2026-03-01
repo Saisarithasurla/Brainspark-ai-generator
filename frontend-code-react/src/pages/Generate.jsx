@@ -19,16 +19,17 @@ function Generate() {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // ✅ Include API Key in Authorization header
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/generate/`,
-          { prompt: prompt }, 
+          { prompt: prompt },
           {
             headers: {
-              "Content-Type": "application/json", 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
             },
           }
         );
-        
 
         console.log("Backend response:", response.data);
         setResult(response.data.result || "No result returned");
@@ -43,13 +44,17 @@ function Generate() {
     fetchData();
   }, [prompt]);
 
-  if (!prompt) return <p className="text-red-500 text-lg">No prompt provided ❗</p>;
+  if (!prompt)
+    return <p className="text-red-500 text-lg">No prompt provided ❗</p>;
+
   return (
     <div className="min-h-screen flex w-full flex-col items-center justify-center p-10 bg-gray-100">
       {loading ? (
         <div className="flex flex-col items-center">
           <div className="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-lg font-medium text-gray-600">Generating Response...</p>
+          <p className="text-lg font-medium text-gray-600">
+            Generating Response...
+          </p>
         </div>
       ) : (
         result && (
@@ -61,4 +66,5 @@ function Generate() {
     </div>
   );
 }
+
 export default Generate;
